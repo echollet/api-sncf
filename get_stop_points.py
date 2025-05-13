@@ -44,8 +44,7 @@ def get_all_stops(token:str)->StopPoints:
     train_stop_points = []
     longdist_train_stop_points = []
 
-    #for i in range(1, 255):
-    for page in range(1, 4):
+    for page in range(1, 255):
         single_page_stop_points = http_request(token, page)
 
         for stop_point in single_page_stop_points["stop_points"]:

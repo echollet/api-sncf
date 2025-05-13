@@ -1,0 +1,3 @@
+CREATE TABLE types_enum (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, typename TEXT NOT NULL);
+CREATE TABLE sqlite_sequence(name,seq);
+CREATE TABLE stop_points (id TEXT PRIMARY KEY NOT NULL, name TEXT NOT NULL, label TEXT NOT NULL, id_type INTEGER REFERENCES types_enum (id));
