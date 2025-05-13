@@ -2,3 +2,5 @@
 Pipfile.lock
 all_labels.json
 process.log
+*.db
+
