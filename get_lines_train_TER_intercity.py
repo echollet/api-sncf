@@ -14,16 +14,16 @@ from dotenv import load_dotenv
 from tqdm import tqdm
 
 
-from db_sqlite3_itf import db_insert_stop_points
+from db_sqlite3_itf import db_insert_lines, db_insert_lines_to_routes
 
-from type_definitions import StopPoint, StopPoints
+from type_definitions import Line, Lines
 
 
 
 
 def http_request(token:str, page:int)->str:
 
-    url = 'https://api.navitia.io/v1/coverage/sncf/stop_points'
+    url = 'https://api.navitia.io/v1/coverage/sncf/lines'
 
     # https://numerique.sncf.com/startup/api/
     # https://docs.python-requests.org/en/latest/user/quickstart/#custom-headers
@@ -52,40 +52,38 @@ def http_request(token:str, page:int)->str:
     return x.json()
 
 
-def get_all_stops(token:str)->StopPoints:
-    train_stop_points = []
-    longdist_train_stop_points = []
+def get_all_lines(token:str)->Lines:
+    ter_lines = []
+    lines_to_routes = []
 
-    nb_pages = get_pagination_stop_points()
+    nb_pages = get_pagination_lines()
 
     with tqdm(total=nb_pages) as bar:
         for page in range(1, nb_pages):
-            single_page_stop_points = http_request(token, page)
+            single_page_lines = http_request(token, page)
 
-            for stop_point in single_page_stop_points["stop_points"]:
+            for line in single_page_lines["lines"]:
                 
                 # https://docs.python.org/3/howto/regex.html
                 p = re.compile(':Train$')
-                m = p.search(stop_point["id"])
+                for physical_mode in line["physical_modes"]:
+                    #print(physical_mode)
+                    m = p.search(physical_mode["id"])
 
-                if m is not None:
-                    train_stop_points.append(StopPoint(stop_point["id"], stop_point["name"], stop_point["label"]))
+                    if m is not None:
+                        route_ids = [ route["id"] for route in line["routes"] ]
+                        ter_lines.append(Line(line["id"], line["name"], line["code"]))
 
-            for stop_point in single_page_stop_points["stop_points"]:
-                
-                p = re.compile(':LongDistanceTrain$')
-                m = p.search(stop_point["id"])
-
-                if m is not None:
-                    longdist_train_stop_points.append(StopPoint(stop_point["id"], stop_point["name"], stop_point["label"]))
-                    
+                        for route_id in route_ids:
+                            lines_to_routes.append((line["id"], route_id))
+                   
             bar.update(1)
 
-    return StopPoints(train_stop_points, longdist_train_stop_points)
+    return ter_lines, lines_to_routes
 
 
-def get_pagination_stop_points()->int:
-    url = 'https://api.navitia.io/v1/coverage/sncf/stop_points'
+def get_pagination_lines()->int:
+    url = 'https://api.navitia.io/v1/coverage/sncf/lines'
     headers = { 'Authorization' : 'Basic ZDNkYThlOGYtNmEzOS00ZTk4LTgzM2ItNzE5ZGRhYmQyM2EwOg==' }
     payload = {}
     
@@ -130,9 +128,11 @@ if __name__ == "__main__":
     #
     # get stop_points
     #
-    stop_points = get_all_stops(API_TOKEN)
+    lines, lines_to_routes = get_all_lines(API_TOKEN)
 
-    print(stop_points)
+    #print(lines)
+    #print(lines_to_routes)
 
-    db_insert_stop_points(stop_points, DBNAME)
+    db_insert_lines(lines, DBNAME)
+    db_insert_lines_to_routes(lines_to_routes, DBNAME)
 
