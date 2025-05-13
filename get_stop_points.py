@@ -10,17 +10,15 @@ import json
 import re
 
 from dotenv import load_dotenv
-from collections import namedtuple
 
 
-import sqlite3_itf as sql
+
+from db_sqlite3_itf import db_insert_stop_points
+
+from type_definitions import StopPoint, StopPoints
 
 
-StopPoint = namedtuple("StopPoint", "id name label")
-StopPoints = namedtuple("StopPoints", "train_stops long_dist_train_stops")
 
-
-API_TOKEN="d3da8e8f-6a39-4e98-833b-719ddabd23a0"
 
 def http_request(token:str, page:int)->str:
 
@@ -44,7 +42,8 @@ def get_all_stops(token:str)->StopPoints:
     train_stop_points = []
     longdist_train_stop_points = []
 
-    for page in range(1, 255):
+    #for page in range(1, 255):
+    for page in range(1, 2):
         single_page_stop_points = http_request(token, page)
 
         for stop_point in single_page_stop_points["stop_points"]:
@@ -62,32 +61,29 @@ def get_all_stops(token:str)->StopPoints:
             m = p.search(stop_point["id"])
 
             if m is not None:
-                longdist_train_stop_points.append((stop_point["id"], stop_point["name"], stop_point["label"]))
-
-    #print(train_stop_points)
-    #print(longdist_train_stop_points)
+                longdist_train_stop_points.append(StopPoint(stop_point["id"], stop_point["name"], stop_point["label"]))
 
     return StopPoints(train_stop_points, longdist_train_stop_points)
 
 
-def insert_stop_points_in_db(stop_points, conn):
-    for stop_point in stop_points.train_stops:
-        sql.insert_train_stop(conn, (stop_point.id, stop_point.name, stop_point.label, 1))
-    return
+
 
 
 if __name__ == "__main__":
 
+    #
+    # init logger
+    #
     LOGLEVEL='INFO'
     #LOGLEVEL='DEBUG'
 
     logger = logging.getLogger(__name__)
     numeric_level = getattr(logging, LOGLEVEL.upper(), None)
-    #logging.basicConfig(filename='./process.log', encoding='utf-8', level=numeric_level)
     logging.basicConfig(filename='./process.log', level=numeric_level)
 
-    #logging.info("Syst path : {}".format(sys.path))
-
+    #
+    # load .env
+    #
     load_dotenv()
     API_TOKEN = os.environ.get('API_TOKEN')
     DBNAME = os.environ.get('DBNAME')
@@ -95,11 +91,12 @@ if __name__ == "__main__":
     logging.info(API_TOKEN)
     logging.info(DBNAME)
 
+    #
+    # get stop_points
+    #
     stop_points = get_all_stops(API_TOKEN)
 
     print(stop_points)
 
-    conn = sql.create_connection(DBNAME)
-
-    insert_stop_points_in_db(stop_points, conn)
+    db_insert_stop_points(stop_points, DBNAME)
 
