@@ -102,16 +102,11 @@ def db_insert_line_to_route(conn, line_to_route):
 def db_insert_stop_points(stop_points:StopPoints, dbname:str):
     conn = db_create_connection(dbname)
 
-    with tqdm(total=len(stop_points.train_stops)) as bar:
-        for stop_point in stop_points.train_stops:
-            db_insert_stop_point(conn, (stop_point.id, stop_point.name, stop_point.label, 1))
+    with tqdm(total=len(stop_points)) as bar:
+        for stop_point in stop_points:
+            db_insert_stop_point(conn, (stop_point.id, stop_point.name, stop_point.label, stop_point.type))
             bar.update(1)
     
-    with tqdm(total=len(stop_points.train_stops)) as bar:
-        for stop_point in stop_points.long_dist_train_stops:
-            db_insert_stop_point(conn, (stop_point.id, stop_point.name, stop_point.label, 2))
-            bar.update(1)
-
     return
 
 

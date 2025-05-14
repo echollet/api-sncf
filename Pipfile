@@ -7,6 +7,7 @@ name = "pypi"
 dotenv = "*"
 requests = "*"
 tqdm = "*"
+argh = "*"
 
 [dev-packages]
 

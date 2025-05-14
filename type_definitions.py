@@ -8,14 +8,14 @@ from collections import namedtuple
 from typing import List
 
 
-Route = namedtuple("Route", "id name line")
+Route = namedtuple("Route", ["id","name","line"])
 Routes = List[Route]
 
-Line = namedtuple("Line", "id name code")
+Line = namedtuple("Line", ["id", "name", "code"])
 Lines = List[Line]
 
-StopArea = namedtuple("StopArea", "id name label")
+StopArea = namedtuple("StopArea", ["id", "name", "label"])
 StopAreas = List[StopArea]
 
-StopPoint = namedtuple("StopPoint", "id name label")
-StopPoints = namedtuple("StopPoints", "train_stops long_dist_train_stops")
+StopPoint = namedtuple("StopPoint", ["id", "name", "label", "type"])
+StopPoints = List[StopPoint]
