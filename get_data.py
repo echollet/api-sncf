@@ -6,6 +6,8 @@ import os
 import logging
 import argh
 
+from typing import cast
+
 from dotenv import load_dotenv
 
 from db_sqlite3_itf import \
@@ -114,10 +116,10 @@ if __name__ == "__main__":
     # load .env
     #
     load_dotenv()
-    API_TOKEN = os.environ.get('API_TOKEN')
+    API_TOKEN : str = cast(str,os.environ.get('API_TOKEN')) # Optional[str] -> str
     API_TOKEN_BASE64 = token_to_base64(API_TOKEN+':')
 
-    DBNAME = os.environ.get('DBNAME')
+    DBNAME : str = cast(str, os.environ.get('DBNAME')) # Optional[str] -> str
 
     logging.info("API_TOKEN {}".format(API_TOKEN))
     logging.info("API_TOKEN_BASE64 {}".format(API_TOKEN_BASE64))

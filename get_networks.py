@@ -5,6 +5,8 @@
 
 from tqdm import tqdm
 
+from typing import Dict, Any
+
 from type_definitions import Network, Networks
 
 from get_pagination import get_pagination
@@ -18,7 +20,7 @@ def get_data_networks(url:str, token_base64:str, maxpages:int)->Networks:
 
     with tqdm(total=nb_pages) as bar:
         for page in range(0, nb_pages):
-            single_page_networks = http_request_page(url, page, token_base64)
+            single_page_networks : Dict[str,Any] = http_request_page(url, page, token_base64)
 
             for network in single_page_networks["networks"]:
                 networks.append(Network(network["id"], network["name"]))

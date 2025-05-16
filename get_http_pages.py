@@ -5,9 +5,9 @@
 import logging
 import requests
 
+from typing import Dict, Any
 
-
-def http_request_page(url:str, page:int, api_token_base64:str)->str:
+def http_request_page(url:str, page:int, api_token_base64:str)->Dict[str,Any]:
 
     # e.g. : url = 'https://api.navitia.io/v1/coverage/sncf/stop_points'
 

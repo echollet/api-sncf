@@ -4,6 +4,7 @@
 
 
 from tqdm import tqdm
+from typing import Dict, Any
 
 from type_definitions import StopArea, StopAreas
 
@@ -18,7 +19,7 @@ def get_data_stop_areas(url:str, token_base64:str, maxpages:int)->StopAreas:
 
     with tqdm(total=nb_pages) as bar:
         for page in range(0, nb_pages):
-            single_page_stop_areas = http_request_page(url, page, token_base64)
+            single_page_stop_areas : Dict[str,Any]  = http_request_page(url, page, token_base64)
 
             for stop_area in single_page_stop_areas["stop_areas"]:
                 stop_areas.append(StopArea(stop_area["id"], stop_area["name"], stop_area["label"]))

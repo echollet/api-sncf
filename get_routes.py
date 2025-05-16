@@ -4,6 +4,9 @@
 
 
 from tqdm import tqdm
+
+from typing import Dict, Any
+
 from type_definitions import Route, Routes
 
 from get_pagination import get_pagination
@@ -17,7 +20,7 @@ def get_data_routes(url:str, token_base64:str, maxpages:int)->Routes:
 
     with tqdm(total=nb_pages) as bar:
         for page in range(0, nb_pages):
-            single_page_routes = http_request_page(url, page, token_base64)
+            single_page_routes : Dict[str,Any] = http_request_page(url, page, token_base64)
 
             for route in single_page_routes["routes"]:
                 routes.append(Route(route["id"], route["name"], route["line"]["id"]))

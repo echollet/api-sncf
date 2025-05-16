@@ -5,13 +5,16 @@
 import re
 
 from tqdm import tqdm
-from type_definitions import Line, Lines
+from typing import Dict, Any, Tuple, List
+
+
+from type_definitions import Line, Lines, LineId, RouteId
 
 from get_pagination import get_pagination
 from get_http_pages import http_request_page
 
 
-def get_data_lines(url:str, token_base64:str, maxpages:int)->Lines:
+def get_data_lines(url:str, token_base64:str, maxpages:int)->Tuple[Lines, List[Tuple[LineId, RouteId]]]:
     ter_lines = []
     lines_to_routes = []
 
@@ -19,7 +22,7 @@ def get_data_lines(url:str, token_base64:str, maxpages:int)->Lines:
 
     with tqdm(total=nb_pages) as bar:
         for page in range(0, nb_pages):
-            single_page_lines = http_request_page(url, page, token_base64)
+            single_page_lines : Dict[str,Any] = http_request_page(url, page, token_base64)
 
             for line in single_page_lines["lines"]:
                 

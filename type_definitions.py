@@ -5,8 +5,11 @@
 # https://docs.python.org/3.8/library/typing.html
 
 from collections import namedtuple
-from typing import List
+from typing import List, NewType
 
+
+LineId = NewType('LineId', str)
+RouteId = NewType('RouteId', str)
 
 Route = namedtuple("Route", ["id","name","line"])
 Routes = List[Route]
@@ -22,3 +25,4 @@ StopPoints = List[StopPoint]
 
 Network = namedtuple("Network", ["id", "name"])
 Networks = List[Network]
+
