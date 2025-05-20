@@ -10,6 +10,7 @@ from typing import List, NewType
 
 LineId = NewType('LineId', str)
 RouteId = NewType('RouteId', str)
+StopPointId = NewType('StopPointId', str)
 
 Route = namedtuple("Route", ["id","name","line"])
 Routes = List[Route]

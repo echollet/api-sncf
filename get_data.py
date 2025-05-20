@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 
 from db_sqlite3_itf import \
     db_insert_stop_points, db_insert_stop_areas, db_insert_lines, db_insert_lines_to_routes, \
-    db_insert_routes, db_insert_networks
+    db_insert_routes, db_insert_networks, db_insert_stop_points_to_lines
 
 from token_base64 import token_to_base64
 from get_stop_points import get_data_stop_points
@@ -20,6 +20,19 @@ from get_stop_areas import get_data_stop_areas
 from get_lines import get_data_lines
 from get_routes import get_data_routes
 from get_networks import get_data_networks
+from get_stop_point_to_line import get_data_stop_point_to_line
+
+
+
+def curry(func):
+    def wrapper(*args):
+        print("wrapper called with func {} and args {}".format(func, args))
+        return func(*args)
+    return wrapper
+
+@curry
+def foo(arg1, arg2, arg3):
+    print("core foo function called with : {}".format([arg1, arg2, arg3]))
 
 
 #
@@ -82,13 +95,26 @@ def get_networks(arg1: str, *args, maxpages: int, exec: bool = False) :
 
     url = 'https://api.navitia.io/v1/coverage/sncf/networks'
 
-    routes = get_data_networks(url, API_TOKEN_BASE64, maxpages)
+    networks = get_data_networks(url, API_TOKEN_BASE64, maxpages)
     
     if exec :
-        db_insert_networks(routes, DBNAME)
+        db_insert_networks(networks, DBNAME)
 
     return
 
+
+def get_stop_point_to_line(arg1: str, *args, maxstops: int, exec: bool = False) :
+    logging.info("arguments : {}".format([arg1, args, maxstops, exec]))
+
+    url = 'https://api.navitia.io/v1/coverage/sncf/stop_points'
+
+    stop_point_ids_to_line_ids = get_data_stop_point_to_line(url, API_TOKEN_BASE64, maxstops, DBNAME)
+    print(stop_point_ids_to_line_ids)
+    
+    if exec :
+        db_insert_stop_points_to_lines(stop_point_ids_to_line_ids, DBNAME)
+
+    return
 
 #
 # main
@@ -96,7 +122,7 @@ def get_networks(arg1: str, *args, maxpages: int, exec: bool = False) :
 
 API_TOKEN_BASE64 = ""
 parser=argh.ArghParser()
-parser.add_commands([get_networks, get_stop_points, get_stop_areas, get_lines, get_routes])
+parser.add_commands([get_networks, get_stop_points, get_stop_areas, get_lines, get_routes, get_stop_point_to_line])
 
 
 if __name__ == "__main__":
@@ -126,6 +152,8 @@ if __name__ == "__main__":
     logging.info("DBNAME {}".format(DBNAME))
 
     parser.dispatch()
+
+    foo(1,2,3)
 
 
 
