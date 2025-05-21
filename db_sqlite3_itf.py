@@ -41,7 +41,7 @@ def db_select_stop_points(dbname:str)->List[str]:
     conn = db_create_connection(dbname)
 
     sql="""
-    SELECT id FROM STOP_POINTS;
+    SELECT id FROM STOP_POINTS WHERE id NOT IN (SELECT stop_point_id FROM lnk_stop_point_line);
     """
 
     try:
@@ -235,6 +235,7 @@ def db_insert_stop_point_id_to_line_id(conn, stop_point_id_to_line_id:tuple):
     try:
         cur=conn.cursor()
         cur.execute(sql, stop_point_id_to_line_id)
+        conn.commit()
     except Error as e:
         print(e)
 

@@ -24,16 +24,6 @@ from get_stop_point_to_line import get_data_stop_point_to_line
 
 
 
-def curry(func):
-    def wrapper(*args):
-        print("wrapper called with func {} and args {}".format(func, args))
-        return func(*args)
-    return wrapper
-
-@curry
-def foo(arg1, arg2, arg3):
-    print("core foo function called with : {}".format([arg1, arg2, arg3]))
-
 
 #
 # argh commands
@@ -109,7 +99,7 @@ def get_stop_point_to_line(arg1: str, *args, maxstops: int, exec: bool = False) 
     url = 'https://api.navitia.io/v1/coverage/sncf/stop_points'
 
     stop_point_ids_to_line_ids = get_data_stop_point_to_line(url, API_TOKEN_BASE64, maxstops, DBNAME)
-    print(stop_point_ids_to_line_ids)
+    #print(stop_point_ids_to_line_ids)
     
     if exec :
         db_insert_stop_points_to_lines(stop_point_ids_to_line_ids, DBNAME)
@@ -153,7 +143,6 @@ if __name__ == "__main__":
 
     parser.dispatch()
 
-    foo(1,2,3)
 
 
 
