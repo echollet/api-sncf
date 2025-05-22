@@ -3,5 +3,4 @@ Pipfile.lock
 all_labels.json
 process.log
 *.db
-db_data.sql
 tmp/*
